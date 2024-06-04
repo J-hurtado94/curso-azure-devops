@@ -71,7 +71,7 @@ jobs:
     displayName: 'Publish Artifact'
     inputs:
       PathtoPublish: '$(Build.ArtifactStagingDirectory)'
-      ArtifactName: '$(Parameters.ArtifactName)'
+      ArtifactName: 'drop'
     condition: succeededOrFailed()
 
 - job: Agentes
