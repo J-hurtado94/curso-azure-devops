@@ -95,8 +95,9 @@ jobs:
   environment:
     name: 'WEB'
     resourceType: VirtualMachine
-    tags: WEB
+    tags: 'WEB'
   pool:
+    vmImage: 'windows-latest'
     name: Azure Pipelines
     demands:
       - msbuild
