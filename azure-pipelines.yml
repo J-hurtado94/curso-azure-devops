@@ -34,12 +34,12 @@ jobs:
   - task: NuGetCommand@2
     displayName: 'NuGet restore'
     inputs:
-      restoreSolution: '$(solution)'
+      restoreSolution: '$(Parameters.solution)'
 
   - task: VSBuild@1
     displayName: 'Build solution'
     inputs:
-      solution: '$(solution)'
+      solution: '$(Parameters.solution)'
       platform: '$(BuildPlatform)'
       configuration: '$(BuildConfiguration)'
 
@@ -73,7 +73,7 @@ jobs:
     displayName: 'Publish Artifact'
     inputs:
       PathtoPublish: '$(Build.ArtifactStagingDirectory)'
-      ArtifactName: 'drop'
+      ArtifactName: '$(Parameters.ArtifactName)'
     condition: succeededOrFailed()
 
 - job: Agentes
