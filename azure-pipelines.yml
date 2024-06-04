@@ -18,7 +18,7 @@ variables:
   BuildConfiguration: 'Release'  # Añadir valor por defecto para BuildConfiguration
 
 jobs:
-- job: BuildAndTest
+- job: Agente
   pool:
     name: 'Azure Pipelines'
     demands:
@@ -75,7 +75,7 @@ jobs:
       ArtifactName: '$(Build.ArtifactName)'
     condition: succeededOrFailed()
 
-- job: DownloadAndTestArtifacts
+- job: Agentes
   pool:
     name: Azure Pipelines
     demands:
