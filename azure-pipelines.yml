@@ -71,15 +71,7 @@ jobs:
       PathtoPublish: '$(Build.ArtifactStagingDirectory)'
       ArtifactName: 'drop'
     condition: succeededOrFailed()
-  
-- deployment: VMDeploy
-  displayName: Web deploy
-  environment:
-    name: 'WEB'
-    resourceType: VirtualMachine
-    tags: 'WEB'
-   
-
+ 
 - job: DownloadAndTestArtifacts
   pool:
     vmImage: 'windows-latest'  # Asegurarte de que el agente sea Windows
@@ -98,7 +90,26 @@ jobs:
     displayName: 'VsTest - testAssemblies'
 
 
-
+- deployment: VMDeploy
+  displayName: 'Web deploy'
+  environment:
+    name: 'WEB'
+    resourceType: VirtualMachine
+    tags: WEB
+  pool:
+    name: Azure Pipelines
+    demands:
+      - msbuild
+      - visualstudio
+  dependsOn: 
+    - BuildAndTest
+    - DownloadAndTestArtifacts
+  strategy:
+    runOnce:
+      deploy:
+        steps:
+          - script: echo 'Despliegue de la aplicación web'
+            displayName: 'Despliegue de la aplicación web'
 
 
 
