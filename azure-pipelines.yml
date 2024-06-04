@@ -77,7 +77,7 @@ jobs:
     vmImage: 'windows-latest'  # Asegurarte de que el agente sea Windows
     demands:
     - vstest
-  dependsOn: BuildAndTest
+  
   strategy:
     parallel: 3  # Configurar el número de agentes paralelos
   steps:
