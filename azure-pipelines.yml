@@ -4,6 +4,14 @@ pool:
   - msbuild
   - visualstudio
 
+# Your build pipeline references the ‘BuildPlatform’ variable, which you’ve selected to be settable at queue time. 
+# Create or edit the build pipeline for this YAML file, define the variable on the Variables tab, and then select the option to make it settable at queue time. 
+# See https://go.microsoft.com/fwlink/?linkid=865971
+
+# Your build pipeline references the ‘BuildConfiguration’ variable, which you’ve selected to be settable at queue time. 
+# Create or edit the build pipeline for this YAML file, define the variable on the Variables tab, and then select the option to make it settable at queue time. 
+# See https://go.microsoft.com/fwlink/?linkid=865971
+
 variables:
   solution: 'KodotiAzureDevOpsProject.sln'
   BuildPlatform: 'Any CPU'  # Añadir valor por defecto para BuildPlatform
@@ -16,8 +24,6 @@ jobs:
     demands:
     - msbuild
     - visualstudio
-  strategy:
-    parallel: 3  # Configurar el número de agentes paralelos
   steps:
   - task: NuGetToolInstaller@0
     displayName: 'Use NuGet'
@@ -40,11 +46,11 @@ jobs:
     displayName: 'Test Assemblies'
     inputs:
       testAssemblyVer2: |
-       **\$(BuildConfiguration)\*Tests*.dll
-       **\$(BuildConfiguration)\*.*Tests*.dll
-       **\$(BuildConfiguration)\**\*Tests*.dll
-       **\$(BuildConfiguration)\**\*.*Tests*.dll
-       !**\obj\**
+        **\$(BuildConfiguration)\*Tests*.dll
+        **\$(BuildConfiguration)\*.*Tests*.dll
+        **\$(BuildConfiguration)\**\*Tests*.dll
+        **\$(BuildConfiguration)\**\*.*Tests*.dll
+        !**\obj\**
       platform: '$(BuildPlatform)'
       configuration: '$(BuildConfiguration)'
     enabled: false
@@ -68,3 +74,20 @@ jobs:
       PathtoPublish: '$(Build.ArtifactStagingDirectory)'
       ArtifactName: '$(Build.ArtifactName)'
     condition: succeededOrFailed()
+
+- job: DownloadAndTestArtifacts
+  pool:
+    name: Azure Pipelines
+    demands:
+    - vstest
+  strategy:
+    parallel: 3  # Configurar el número de agentes paralelos
+  steps:
+  - task: DownloadBuildArtifacts@1
+    displayName: 'Download Build Artifacts'
+    inputs:
+      artifactName: drop
+      extractTars: false
+
+  - task: VSTest@3
+    displayName: 'VsTest - testAssemblies'
