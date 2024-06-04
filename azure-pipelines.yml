@@ -14,8 +14,6 @@ pool:
 
 variables:
   solution: 'KodotiAzureDevOpsProject.sln'
-  BuildPlatform: 'Any CPU'  # Añadir valor por defecto para BuildPlatform
-  BuildConfiguration: 'Release'  # Añadir valor por defecto para BuildConfiguration
 
 jobs:
 - job: Agente
