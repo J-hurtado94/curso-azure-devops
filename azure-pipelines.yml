@@ -1,92 +1,78 @@
-# Starter pipeline
-# Start with a minimal pipeline that you can customize to build and deploy your code.
-# Add steps that build, run tests, deploy, and more:
-# https://aka.ms/yaml
-
 trigger:
-- master
+  - master
 
 pool:
   vmImage: ubuntu-latest
 
-steps:
-- task: NuGetToolInstaller@0
-  displayName: 'Use NuGet'
-  inputs:
-    versionSpec: 4.4.1
-
-- task: NuGetCommand@2
-  displayName: 'NuGet restore'
-  inputs:
-    restoreSolution: '$(Parameters.solution)'
-
-- task: VSBuild@1
-  displayName: 'Build solution'
-  inputs:
-    solution: '$(Parameters.solution)'
-    platform: '$(BuildPlatform)'
-    configuration: '$(BuildConfiguration)'
-
-- task: VSTest@2
-  displayName: 'Test Assemblies'
-  inputs:
-    testAssemblyVer2: |
-      **\$(BuildConfiguration)\*Tests*.dll
-      **\$(BuildConfiguration)\*.*Tests*.dll
-      **\$(BuildConfiguration)\**\*Tests*.dll
-      **\$(BuildConfiguration)\**\*.*Tests*.dll
-      !**\obj\**
-    platform: '$(BuildPlatform)'
-    configuration: '$(BuildConfiguration)'
-  enabled: false
-
-- task: CopyFiles@2
-  displayName: 'Copy Files to: $(Build.ArtifactStagingDirectory)'
-  inputs:
-    SourceFolder: '$(Build.SourcesDirectory)'
-    TargetFolder: '$(Build.ArtifactStagingDirectory)'
-
-- task: PublishSymbols@2
-  displayName: 'Publish symbols path'
-  inputs:
-    SearchPattern: '**\bin\**\*.pdb'
-    PublishSymbols: false
-  continueOnError: true
-
-- task: PublishBuildArtifacts@1
-  displayName: 'Publish Artifact'
-  inputs:
-    PathtoPublish: '$(build.artifactstagingdirectory)'
-    ArtifactName: '$(Parameters.ArtifactName)'
-  condition: succeededOrFailed()
-
 jobs:
-- job: AgentJob1
-  displayName: 'Agent Job 1'
-  pool:
-    name: Azure Pipelines
-    demands:
-    - agent.name -equals Agent1
+  - job: AgentJob1
+    displayName: 'Agente de trabajo 1'
+    pool:
+      vmImage: 'ubuntu-latest'
 
-  steps:
-  - script: echo This job is running on Agent1
+    steps:
+      - task: NuGetToolInstaller@0
+        displayName: 'Usar NuGet'
+        inputs:
+          versionSpec: 4.4.1
 
-- job: AgentJob2
-  displayName: 'Agent Job 2'
-  pool:
-    name: Azure Pipelines
-    demands:
-    - agent.name -equals Agent2
+      - task: NuGetCommand@2
+        displayName: 'Restaurar NuGet'
+        inputs:
+          restoreSolution: '$(Parameters.solution)'
 
-  steps:
-  - script: echo This job is running on Agent2
+      - task: VSBuild@1
+        displayName: 'Compilar solución'
+        inputs:
+          solution: '$(Parameters.solution)'
+          platform: '$(BuildPlatform)'
+          configuration: '$(BuildConfiguration)'
 
-- job: AgentJob3
-  displayName: 'Agent Job 3'
-  pool:
-    name: Azure Pipelines
-    demands:
-    - agent.name -equals Agent3
+      - task: VSTest@2
+        displayName: 'Pruebas de ensamblado'
+        inputs:
+          testAssemblyVer2: |
+            **\$(BuildConfiguration)\*Tests*.dll
+            **\$(BuildConfiguration)\*.*Tests*.dll
+            **\$(BuildConfiguration)\**\*Tests*.dll
+            **\$(BuildConfiguration)\**\*.*Tests*.dll
+            !**\obj\**
+          platform: '$(BuildPlatform)'
+          configuration: '$(BuildConfiguration)'
+        enabled: false
 
-  steps:
-  - script: echo This job is running on Agent3
+      - task: CopyFiles@2
+        displayName: 'Copiar archivos a: $(Build.ArtifactStagingDirectory)'
+        inputs:
+          SourceFolder: '$(Build.SourcesDirectory)'
+          TargetFolder: '$(Build.ArtifactStagingDirectory)'
+
+      - task: PublishSymbols@2
+        displayName: 'Publicar ruta de símbolos'
+        inputs:
+          SearchPattern: '**\bin\**\*.pdb'
+          PublishSymbols: false
+        continueOnError: true
+
+      - task: PublishBuildArtifacts@1
+        displayName: 'Publicar artefacto'
+        inputs:
+          PathtoPublish: '$(build.artifactstagingdirectory)'
+          ArtifactName: '$(Parameters.ArtifactName)'
+        condition: succeededOrFailed()
+
+  - job: AgentJob2
+    displayName: 'Agente de trabajo 2'
+    pool:
+      vmImage: 'ubuntu-latest'
+
+    steps:
+      - script: echo Este trabajo se está ejecutando en el Agente2
+
+  - job: AgentJob3
+    displayName: 'Agente de trabajo 3'
+    pool:
+      vmImage: 'ubuntu-latest'
+
+    steps:
+      - script: echo Este trabajo se está ejecutando en el Agente3
