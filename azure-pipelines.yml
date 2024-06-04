@@ -39,7 +39,7 @@ jobs:
   - task: VSBuild@1
     displayName: 'Build solution'
     inputs:
-      solution: '$(Parameters.solution)'
+      solution: '$(solution)'
       platform: '$(BuildPlatform)'
       configuration: '$(BuildConfiguration)'
 
