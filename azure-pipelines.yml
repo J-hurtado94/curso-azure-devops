@@ -71,6 +71,13 @@ jobs:
       PathtoPublish: '$(Build.ArtifactStagingDirectory)'
       ArtifactName: 'drop'
     condition: succeededOrFailed()
+  
+- deployment: VMDeploy
+  displayName: Web deploy
+  environment:
+    name: 'Despliegue app'
+    resourceType: VirtualMachine
+   
 
 - job: DownloadAndTestArtifacts
   pool:
@@ -88,3 +95,10 @@ jobs:
 
   - task: VSTest@3
     displayName: 'VsTest - testAssemblies'
+
+
+
+
+
+
+
