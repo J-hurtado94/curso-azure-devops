@@ -78,8 +78,7 @@ jobs:
 - job: Agentes
   pool:
     name: Azure Pipelines
-    demands:
-    - vstest
+    demands: vstest
   strategy:
     parallel: 3  # Configurar el número de agentes paralelos
   steps:
