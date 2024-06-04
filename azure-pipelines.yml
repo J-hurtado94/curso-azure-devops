@@ -4,28 +4,24 @@ pool:
   - msbuild
   - visualstudio
 
-# Your build pipeline references the ‘BuildPlatform’ variable, which you’ve selected to be settable at queue time. 
-# Create or edit the build pipeline for this YAML file, define the variable on the Variables tab, and then select the option to make it settable at queue time. 
-# See https://go.microsoft.com/fwlink/?linkid=865971
-
-# Your build pipeline references the ‘BuildConfiguration’ variable, which you’ve selected to be settable at queue time. 
-# Create or edit the build pipeline for this YAML file, define the variable on the Variables tab, and then select the option to make it settable at queue time. 
-# See https://go.microsoft.com/fwlink/?linkid=865971
-
 variables:
   solution: 'KodotiAzureDevOpsProject.sln'
-  BuildPlatform: 'Any CPU' 
-  BuildConfiguration: 'Release'
+  BuildPlatform: 'Any CPU'  # Añadir valor por defecto para BuildPlatform
+  BuildConfiguration: 'Release'  # Añadir valor por defecto para BuildConfiguration
 
 jobs:
-- job: Agente
+- job: BuildAndTest
   pool:
-    vmImage: 'windows-latest'
-    name: 'Azure Pipelines'
+    vmImage: 'windows-latest'  # Asegurarte de que el agente sea Windows
     demands:
     - msbuild
     - visualstudio
   steps:
+  - script: echo $(BuildPlatform)
+    displayName: 'Show BuildPlatform'
+  - script: echo $(BuildConfiguration)
+    displayName: 'Show BuildConfiguration'
+
   - task: NuGetToolInstaller@0
     displayName: 'Use NuGet'
     inputs:
@@ -34,7 +30,7 @@ jobs:
   - task: NuGetCommand@2
     displayName: 'NuGet restore'
     inputs:
-      restoreSolution: '$(Parameters.solution)'
+      restoreSolution: '$(solution)'
 
   - task: VSBuild@1
     displayName: 'Build solution'
@@ -73,21 +69,21 @@ jobs:
     displayName: 'Publish Artifact'
     inputs:
       PathtoPublish: '$(Build.ArtifactStagingDirectory)'
-      ArtifactName: '$(Parameters.ArtifactName)'
+      ArtifactName: 'drop'
     condition: succeededOrFailed()
 
-- job: Agentes
+- job: DownloadAndTestArtifacts
   pool:
-    vmImage: 'windows-latest'
-    name: Azure Pipelines
-    demands: vstest
+    vmImage: 'windows-latest'  # Asegurarte de que el agente sea Windows
+    demands:
+    - vstest
   strategy:
     parallel: 3  # Configurar el número de agentes paralelos
   steps:
   - task: DownloadBuildArtifacts@1
     displayName: 'Download Build Artifacts'
     inputs:
-      artifactName: drop
+      artifactName: 'drop'
       extractTars: false
 
   - task: VSTest@3
