@@ -20,6 +20,7 @@ variables:
 jobs:
 - job: Agente
   pool:
+    vmImage: 'windows-latest'
     name: 'Azure Pipelines'
     demands:
     - msbuild
@@ -77,6 +78,7 @@ jobs:
 
 - job: Agentes
   pool:
+    vmImage: 'windows-latest'
     name: Azure Pipelines
     demands: vstest
   strategy:
