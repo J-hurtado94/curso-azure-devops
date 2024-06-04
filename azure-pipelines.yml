@@ -1,0 +1,92 @@
+# Starter pipeline
+# Start with a minimal pipeline that you can customize to build and deploy your code.
+# Add steps that build, run tests, deploy, and more:
+# https://aka.ms/yaml
+
+trigger:
+- master
+
+pool:
+  vmImage: ubuntu-latest
+
+steps:
+- task: NuGetToolInstaller@0
+  displayName: 'Use NuGet'
+  inputs:
+    versionSpec: 4.4.1
+
+- task: NuGetCommand@2
+  displayName: 'NuGet restore'
+  inputs:
+    restoreSolution: '$(Parameters.solution)'
+
+- task: VSBuild@1
+  displayName: 'Build solution'
+  inputs:
+    solution: '$(Parameters.solution)'
+    platform: '$(BuildPlatform)'
+    configuration: '$(BuildConfiguration)'
+
+- task: VSTest@2
+  displayName: 'Test Assemblies'
+  inputs:
+    testAssemblyVer2: |
+      **\$(BuildConfiguration)\*Tests*.dll
+      **\$(BuildConfiguration)\*.*Tests*.dll
+      **\$(BuildConfiguration)\**\*Tests*.dll
+      **\$(BuildConfiguration)\**\*.*Tests*.dll
+      !**\obj\**
+    platform: '$(BuildPlatform)'
+    configuration: '$(BuildConfiguration)'
+  enabled: false
+
+- task: CopyFiles@2
+  displayName: 'Copy Files to: $(Build.ArtifactStagingDirectory)'
+  inputs:
+    SourceFolder: '$(Build.SourcesDirectory)'
+    TargetFolder: '$(Build.ArtifactStagingDirectory)'
+
+- task: PublishSymbols@2
+  displayName: 'Publish symbols path'
+  inputs:
+    SearchPattern: '**\bin\**\*.pdb'
+    PublishSymbols: false
+  continueOnError: true
+
+- task: PublishBuildArtifacts@1
+  displayName: 'Publish Artifact'
+  inputs:
+    PathtoPublish: '$(build.artifactstagingdirectory)'
+    ArtifactName: '$(Parameters.ArtifactName)'
+  condition: succeededOrFailed()
+
+jobs:
+- job: AgentJob1
+  displayName: 'Agent Job 1'
+  pool:
+    name: Azure Pipelines
+    demands:
+    - agent.name -equals Agent1
+
+  steps:
+  - script: echo This job is running on Agent1
+
+- job: AgentJob2
+  displayName: 'Agent Job 2'
+  pool:
+    name: Azure Pipelines
+    demands:
+    - agent.name -equals Agent2
+
+  steps:
+  - script: echo This job is running on Agent2
+
+- job: AgentJob3
+  displayName: 'Agent Job 3'
+  pool:
+    name: Azure Pipelines
+    demands:
+    - agent.name -equals Agent3
+
+  steps:
+  - script: echo This job is running on Agent3
